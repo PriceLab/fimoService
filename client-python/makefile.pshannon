@@ -1,0 +1,2 @@
+default:
+	python -i demo.py localhost 5556
