@@ -1,6 +1,6 @@
-PORT=5556
+PORT=5558
 FIMO="/Users/paul/meme/bin/fimo"
 MOTIFS="/Users/paul/s/work/priceLab/cory/footprintWorkflow/JASPAR_CORE_plus_seth.meme"
 
 start:
-	python -i server.py $(PORT) $(FIMO) $(MOTIFS)
+	python -i runServer.py $(PORT) $(FIMO) $(MOTIFS)
