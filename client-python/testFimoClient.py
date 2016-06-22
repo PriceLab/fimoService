@@ -12,7 +12,7 @@ fimoClient = FimoClient(hostname,port)
 print(fimoClient.getHost())
 sequences = {"tert_wt1": "CCCGGAGGGGG", "tert_wt2": "CCCGGGAGGGG", "tert_mut": "CCCCTTCCGGG"}
 
-for i in range (0, 100):
+for i in range (0, 10):
    start = datetime.now()
    tbl = fimoClient.request(sequences)
    end = datetime.now()
