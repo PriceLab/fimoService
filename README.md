@@ -42,8 +42,6 @@ python testFimoClient.py localhost 5558
 In R, after installing two prerequisite packages:
 
 ````
-library(devtools)
-install_github("armstrtw/rzmq")
 source("http://bioconductor.org/biocLite.R")
 biocLite("devtools")
 library(devtools)
