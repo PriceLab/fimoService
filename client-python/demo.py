@@ -19,7 +19,7 @@ msg = {"tert_wt1": "CCCGGAGGGGG", "tert_wt2": "CCCGGGAGGGG", "tert_mut": "CCCCTT
 
 for request in range (1,3):
     print("Sending request ", request,"...")
-    socket.send_string(json.dumps({'sequences': msg}))
+    socket.send_string(json.dumps(msg))
     responseString = socket.recv_string()
     print(responseString)
     tbl = pandas.read_json(responseString)

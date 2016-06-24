@@ -27,7 +27,8 @@ class FimoClient:
    def request(self, sequences):
       if(not self.quiet):
          print("Sending request, length %d" % len(sequences))
-      self.socket.send_string(json.dumps({'sequences': sequences}))
+      self.socket.send_string(json.dumps(sequences))
+      #self.socket.send_string(json.dumps({'sequences': sequences}))
       responseString = self.socket.recv_string()
       if(not self.quiet):
          print(responseString)

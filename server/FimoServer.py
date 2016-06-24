@@ -78,8 +78,10 @@ class FimoServer:
    def handleRequest(self):
 
       request = json.loads(self.socket.recv_string())
-      sequences = request['sequences']
-      print("calling runFimo on %d sequences" % len(sequences))
+      sequences = request;
+      #sequences = request['sequences']
+      print("%s  calling runFimo on %d sequences" % \
+            (time.strftime("%Y-%m-%d %H:%M:%S"), len(sequences)))
       tbl = self.runFimo(sequences)
       obj = pandas.DataFrame.to_json(tbl)
       self.socket.send_string(obj)

@@ -1,0 +1,53 @@
+
+R version 2.13.0 (2011-04-13)
+Copyright (C) 2011 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> rm (list=ls())
+> library (DemoPackage)
+> sessionInfo ()
+R version 2.13.0 (2011-04-13)
+Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
+
+locale:
+[1] en_US.utf-8/en_US.utf-8/C/C/en_US.utf-8/en_US.utf-8
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] DemoPackage_1.0.0
+> DemoPackage:::.test ()
+executing DemoPackage/R/test_package.R:::.test
+[1] "R/test_package.R, about to runTestSuite"
+executing DemoPackage/inst/unitTests/test_pkg:::test.DemoPackage
+
+
+RUNIT TEST PROTOCOL -- Mon Aug 22 16:19:27 2011 
+*********************************************** 
+Number of test functions: 1 
+Number of errors: 0 
+Number of failures: 0 
+
+ 
+1 Test Suite : 
+DemoPackage RUnit Tests - 1 test function, 0 errors, 0 failures
+Number of test functions: 1 
+Number of errors: 0 
+Number of failures: 0 
+> 

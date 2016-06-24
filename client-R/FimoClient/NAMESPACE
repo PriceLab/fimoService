@@ -1,0 +1,9 @@
+exportClasses(FimoClientClass)
+
+export(
+   FimoClient
+   )
+
+exportMethods(
+    requestMatch
+    )

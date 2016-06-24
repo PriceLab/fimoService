@@ -1,0 +1,57 @@
+%\VignetteIndexEntry{DemoPackage Overview}
+%\VignetteDepends{DemoPackage}
+%\VignettePackage{DemoPackage}
+
+\documentclass[12pt]{article}
+
+\usepackage{times}
+\usepackage{hyperref}
+
+\usepackage[authoryear,round]{natbib}
+\usepackage{times}
+\usepackage{comment}
+
+\textwidth=6.2in
+\textheight=8.5in
+%\parskip=.3cm
+\oddsidemargin=.1in
+\evensidemargin=.1in
+\headheight=-.3in
+
+\newcommand{\scscst}{\scriptscriptstyle}
+\newcommand{\scst}{\scriptstyle}
+
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+
+
+\bibliographystyle{plainnat}
+
+
+\title{DemoPackage}
+\author{Paul Shannon}
+
+\begin{document}
+
+\maketitle
+
+\emph{DemoPackage} is a nearly empty R package for you, the R programmer, to adopt and adapt to your own purposes.  
+
+\section{More Help}
+Vignettes are an amalgamation of R code and TeX documents.  They can be bewildering.  A possibly useful example is the one I wrote for the RCytoscape package, which can be obtained using these steps:
+
+\begin{itemize}
+  \item Browse to \url{http://bioconductor.org/packages/release/bioc/html/RCytoscape.html}
+  \item Download \emph{Package Source}
+  \item Extract the vignette file (but note that the version number will very likely be different):
+\begin{verbatim}
+tar zxf RCytoscape_1.2.1.tar.gz RCytoscape/inst/doc/RCytoscape.Rnw
+\end{verbatim}
+  \item Study and/or steal from this file: \emph{RCytoscape.Rnw}
+\end{itemize}
+
+
+
+\end{document}
