@@ -39,6 +39,11 @@ Test this out with the python FimoClient module:
 python testFimoClient.py localhost 5558
 ```
 
+At the ISB, with no need to start your own server (and thus no need to install the MEME suite):
+```
+python testFimoClient.py whovian 5558
+```
+
 In R, after installing two prerequisite packages:
 
 ````
@@ -53,7 +58,7 @@ With this installation complete, try it out:
 
 ```
 library(FimoClient)
-fimo <- FimoClient("localhost", 5558, quiet=TRUE)
+fimo <- FimoClient("whovian", 5558, quiet=TRUE)
 sequences <- list(tert_wt1="CCCGGAGGGGG", tert_wt2="CCCGGGAGGGG", tert_mut="CCCCTTCCGGG")
 tbl <- requestMatch(fimo, sequences)
 ```
