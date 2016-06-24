@@ -39,7 +39,21 @@ Test this out with the python FimoClient module:
 python testFimoClient.py localhost 5558
 ```
 
-In R
+In R, after installing two prerequisite packages:
+
+````
+library(devtools)
+install_github("armstrtw/rzmq")
+
+```
+source("http://bioconductor.org/biocLite.R")
+biocLite("devtools")
+library(devtools)
+install_github("RBigData/pbdZMQ")
+install_github("PriceLab/fimoService", subdir="client-R/FimoClient")
+``` 
+
+With this installation complete, try it out:
 
 ```
 library(FimoClient)
@@ -47,7 +61,8 @@ fimo <- FimoClient("localhost", 5558, quiet=TRUE)
 sequences <- list(tert_wt1="CCCGGAGGGGG", tert_wt2="CCCGGGAGGGG", tert_mut="CCCCTTCCGGG")
 tbl <- requestMatch(fimo, sequences)
 ```
-Producing this output:
+Producing this output.  Notice that only the tert_mut sequence matches any PWM, as suggested
+by the Tert Promoter Mutations paper:
 
 |X.pattern.name | sequence.name | start | stop | strand | score | p.value | q.value | matched.sequence|
 |---------------|:--------------|:------|:-----|:-------|:------|:--------|:--------|-----------------|
