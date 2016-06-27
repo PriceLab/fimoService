@@ -48,9 +48,9 @@ In R, after installing two prerequisite packages:
 
 ````
 source("http://bioconductor.org/biocLite.R")
+biocLite("pbdZMQ")
 biocLite("devtools")
 library(devtools)
-install_github("RBigData/pbdZMQ")
 install_github("PriceLab/fimoService", subdir="client-R/FimoClient")
 ``` 
 
