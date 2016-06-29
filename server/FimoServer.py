@@ -6,6 +6,7 @@ import subprocess
 import os
 import os.path
 import tempfile
+import shutil
 import pandas
 #------------------------------------------------------------------------------------------------------------------------
 class FimoServer:
@@ -48,6 +49,7 @@ class FimoServer:
       sequencesFile = self.writeSequencesToTemporaryFastaFile(sequences);
       outputDirectory = tempfile.mktemp()
       outputDirectorySwitch = "--oc %s" % outputDirectory
+      print("writing fimo files to %s" % outputDirectory)
       args = [self.fimoExecutable, "--oc", outputDirectory, self.motifsFile, sequencesFile]
       devnull = open(os.devnull, 'w')
       processStatus = subprocess.check_call(args, stdout=devnull, stderr=devnull)
@@ -55,7 +57,8 @@ class FimoServer:
       if(processStatus == 0):
          filename = "%s/%s" % (outputDirectory, "fimo.txt")
          tbl = pandas.read_csv(filename, delimiter="\t")
-
+      shutil.rmtree(outputDirectory)
+      print("deleted %s" % outputDirectory)
       return(tbl)
 
    #--------------------------------------------------------------------------------
