@@ -50,6 +50,10 @@ setMethod("requestMatch", "FimoClientClass",
 
     function(obj, sequences){
        stopifnot(is.list(sequences))
+       if(is.null(names(sequences))){
+           artificial.names <- sprintf("seq%04d", 1:length(sequences))
+           names(sequences) <- artificial.names
+           }
        sequences.json.raw <- charToRaw(toJSON(sequences, auto_unbox=TRUE))
        if(!obj@quiet)
            printf("sending %d sequences to server", length(sequences))
