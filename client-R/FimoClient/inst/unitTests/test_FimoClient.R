@@ -1,6 +1,9 @@
 library(FimoClient)
 library(RUnit)
 #------------------------------------------------------------------------------------------------------------------------
+FIMO_HOST <- "whovian"
+FIMO_PORT <- 5558
+#------------------------------------------------------------------------------------------------------------------------
 runTests <- function()
 {
    #test_constructor()
@@ -12,14 +15,14 @@ runTests <- function()
 test_constructor <- function()
 {
    printf("--- test_constructor")
-   fc <- FimoClient("localhost", 5558, quiet=FALSE)    
+   fc <- FimoClient(FIMO_HOST, FIMO_PORT, quiet=FALSE)    
 
 } # test_constructor
 #------------------------------------------------------------------------------------------------------------------------
 test_request.small.100x <- function()
 {
    printf("--- test_request.small.100x")
-   fc <- FimoClient("localhost", 5558, quiet=TRUE)
+   fc <- FimoClient(FIMO_HOST, FIMO_PORT, quiet=TRUE)
    sequences <- list(tert_wt1="CCCGGAGGGGG", tert_wt2="CCCGGGAGGGG", tert_mut= "CCCCTTCCGGG")
 
    max <- 3
@@ -35,7 +38,7 @@ test_request.small.100x <- function()
 test_request.large <- function()
 {
    printf("--- test_request.large")
-   fc <- FimoClient("localhost", 5558, quiet=TRUE)
+   fc <- FimoClient(FIMO_HOST, FIMO_PORT, quiet=TRUE)
 
    count <- 1000
    sequences <- as.list(rep("CCCCTTCCGGG", count))
