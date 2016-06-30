@@ -50,6 +50,7 @@ class FimoServer:
       outputDirectory = tempfile.mktemp()
       outputDirectorySwitch = "--oc %s" % outputDirectory
       print("writing fimo files to %s" % outputDirectory)
+      print("writing fasta file as %s" % sequencesFile)
       args = [self.fimoExecutable, "--oc", outputDirectory, self.motifsFile, sequencesFile]
       devnull = open(os.devnull, 'w')
       processStatus = subprocess.check_call(args, stdout=devnull, stderr=devnull)
@@ -58,7 +59,9 @@ class FimoServer:
          filename = "%s/%s" % (outputDirectory, "fimo.txt")
          tbl = pandas.read_csv(filename, delimiter="\t")
       shutil.rmtree(outputDirectory)
-      print("deleted %s" % outputDirectory)
+      print("deleted directory %s" % outputDirectory)
+      os.remove(sequencesFile)
+      print("deleted sequence file: %s" % sequencesFile)
       return(tbl)
 
    #--------------------------------------------------------------------------------

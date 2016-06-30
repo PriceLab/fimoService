@@ -12,6 +12,12 @@ class TestFimoServer(unittest.TestCase):
      self.assertEqual(server.getHost(), hostname)
      self.assertEqual(server.getPort(), port)
 
+  def testRequest(self):
+     print("--- testRequest")
+     server = FimoServer(hostname, port)
+     self.assertEqual(server.getHost(), hostname)
+     self.assertEqual(server.getPort(), port)
+
 
 if __name__ == '__main__':
    if len(sys.argv) != 3:
