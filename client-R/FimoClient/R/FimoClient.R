@@ -64,6 +64,10 @@ setMethod("requestMatch", "FimoClientClass",
 
        tbl.as.list <- fromJSON(s)
        tbl.tmp <- as.data.frame(sapply(tbl.as.list, rbind))
+       if(nrow(tbl.tmp) == 0 || ncol(tbl.tmp) == 0){
+          printf("no motif matches for any sequence")
+          return(data.frame())
+          }
          # each cell in the dataframe is a list; each a scalar.  squash those
          # cells to scalars all the way down
        tbl <- as.data.frame(lapply(tbl.tmp, unlist), stringsAsFactors=FALSE)
