@@ -1,7 +1,7 @@
 library(FimoClient)
 library(RUnit)
 #------------------------------------------------------------------------------------------------------------------------
-FIMO_HOST <- "whovian"
+FIMO_HOST <- "localhost"
 FIMO_PORT <- 5558
 #------------------------------------------------------------------------------------------------------------------------
 runTests <- function()
@@ -10,12 +10,12 @@ runTests <- function()
    test_request.small.100x()
    test_request.large()
 
-} # runTests    
+} # runTests
 #------------------------------------------------------------------------------------------------------------------------
 test_constructor <- function()
 {
    printf("--- test_constructor")
-   fc <- FimoClient(FIMO_HOST, FIMO_PORT, quiet=FALSE)    
+   fc <- FimoClient(FIMO_HOST, FIMO_PORT, quiet=FALSE)
 
 } # test_constructor
 #------------------------------------------------------------------------------------------------------------------------

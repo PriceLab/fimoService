@@ -1,11 +1,11 @@
 Package: FimoClient
 Type: Package
-Title: FimoClient: easy access to a FIMO ("Find Individual Motif Occurences") service 
-Version: 0.99.3
-Date: 2016-06-29
+Title: FimoClient: easy access to a FIMO ("Find Individual Motif Occurences") service
+Version: 0.99.4
+Date: 2018-05-27
 Author: Paul Shannon
 Maintainer:  <pshannon@systemsbiology.org>
-Depends: R (>= 3.2.0), pbdZMQ, jsonlite
+Depends: R (>= 3.5.0), pbdZMQ (>= 0.3.3), jsonlite
 Suggests: RUnit
 Description:  A simple programmatic interface to sequence evaluation against a library of binding motifs.
 License: GPL
