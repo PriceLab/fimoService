@@ -44,14 +44,19 @@ class FimoServer:
 
 
    #--------------------------------------------------------------------------------
-   def runFimo(self, sequences):
+   def runFimo(self, sequences, pvalThreshold):
 
       sequencesFile = self.writeSequencesToTemporaryFastaFile(sequences);
       outputDirectory = tempfile.mktemp()
       outputDirectorySwitch = "--oc %s" % outputDirectory
       print("writing fimo files to %s" % outputDirectory)
       print("writing fasta file as %s" % sequencesFile)
-      args = [self.fimoExecutable, "--oc", outputDirectory, self.motifsFile, sequencesFile]
+      args = [self.fimoExecutable, "--oc", outputDirectory,
+                                    "--thresh", "%f" % pvalThreshold,
+                                    self.motifsFile,
+                                    sequencesFile]
+      print(args)
+
       devnull = open(os.devnull, 'w')
       processStatus = subprocess.check_call(args, stdout=devnull, stderr=devnull)
       tbl = pandas.DataFrame()
@@ -84,11 +89,13 @@ class FimoServer:
    def handleRequest(self):
 
       request = json.loads(self.socket.recv_string())
-      sequences = request;
-      #sequences = request['sequences']
-      print("%s  calling runFimo on %d sequences" % \
-            (time.strftime("%Y-%m-%d %H:%M:%S"), len(sequences)))
-      tbl = self.runFimo(sequences)
+      #print(request)
+      sequences = request['sequences']
+      pvalThreshold = request['pvalThreshold']
+
+      print("%s  calling runFimo on %d sequences, pvalThreshod %f" % \
+            (time.strftime("%Y-%m-%d %H:%M:%S"), len(sequences), pvalThreshold))
+      tbl = self.runFimo(sequences, pvalThreshold)
       obj = pandas.DataFrame.to_json(tbl)
       self.socket.send_string(obj)
 

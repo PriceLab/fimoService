@@ -14,12 +14,12 @@ def runTests():
    test_runFimo()
 
 #------------------------------------------------------------------------------------------------------------------------
-def runFimo(sequences, fimoExecutable, motifsFile):
+def runFimo(sequences, fimoExecutable, motifsFile, pvalThreshold):
 
    sequencesFile = writeSequencesToTemporaryFastaFile(sequences);
    outputDirectory = tempfile.mktemp()
    outputDirectorySwitch = "--oc %s" % outputDirectory
-   args = [fimoExecutable, "--oc", outputDirectory, motifsFile, sequencesFile]
+   args = [fimoExecutable, "--oc", outputDirectory, "--thresh", pvalThreshold, motifsFile, sequencesFile]
    devnull = open(os.devnull, 'w')
    processStatus = subprocess.check_call(args, stdout=devnull, stderr=devnull)
 
@@ -88,7 +88,8 @@ socket.bind("tcp://*:%s" % port)
 while True:
     request = json.loads(socket.recv_string())
     sequences = request['sequences']
-    print("calling runFimo on %d sequences" % len(sequences))
-    tbl = runFimo(sequences, fimoExecutable, motifsFile)
+    pvalThreshold = request['pvalThreshold']
+    print("calling runFimo on %d sequences, pvalThreshold %f" % (len(sequences), pvalThreshold))
+    tbl = runFimo(sequences, fimoExecutable, motifsFile, pvalThreshold)
     obj = pandas.DataFrame.to_json(tbl)
     socket.send_string(obj)
