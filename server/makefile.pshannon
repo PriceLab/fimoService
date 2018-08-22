@@ -3,8 +3,28 @@ FIMO="/Users/paul/meme/bin/fimo"
 #MOTIFS="/Users/paul/s/work/priceLab/cory/footprintWorkflow/JASPAR_CORE_plus_seth.meme"
 #MOTIFS="../pfms/JASPAR_CORE_plus_seth.meme"
 #MOTIFS="../pfms/MA0073.1.meme"
-#MOTIFS="../pfms/jaspar2018.hocomoco.human.meme"
-MOTIFS="../pfms/rreb1.human.meme"
+MOTIFS="../pfms/jaspar2018.hocomoco.human.meme"
+#MOTIFS="../pfms/rreb1.human.meme"
+#MOTIFS="../pfms/model03.pfms.meme"
+#MOTIFS="../pfms/rin3.trena.pfms.meme"
+#MOTIFS="../pfms/lyl1-related.meme"
+#MOTIFS="../pfms/trem2.pfms.meme"
+#MOTIFS="../pfms/trem2.curated.15.pfms.meme"
+#MOTIFS="../pfms/ckap2l.meme"
+#MOTIFS="../pfms/hsapiens1846.meme"
+#MOTIFS="../pfms/CKAP2L-57tfs.meme"
+#MOTIFS="../pfms/human-jaspar2018-igap-adgenes.meme"
+#MOTIFS="../pfms/spi1.human.meme"
+#MOTIFS="../pfms/nfatc2.human.meme"
+#MOTIFS="../pfms/fli1.human.meme"
+#MOTIFS="../pfms/current.meme"
+#MOTIFS="../pfms/inpp5d.meme"
+#MOTIFS="../pfms/athaliana.all.meme"
 
 start:
-	python -i runServer.py $(PORT) $(FIMO) $(MOTIFS)
+	python -i runFimoServer.py $(PORT) $(FIMO) $(MOTIFS)
+
+
+unitTests:
+	python -i runFimoServer.py $(PORT) $(FIMO) ../pfms/rreb1.human.meme
+
