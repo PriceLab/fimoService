@@ -9,3 +9,4 @@ exportMethods(
     )
 
 import(pbdZMQ)
+import(jsonlite)
