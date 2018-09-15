@@ -7,3 +7,5 @@ export(
 exportMethods(
     requestMatch
     )
+
+import(pbdZMQ)

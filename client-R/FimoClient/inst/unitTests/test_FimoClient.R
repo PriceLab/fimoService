@@ -6,10 +6,16 @@ FIMO_PORT <- 5558
 #------------------------------------------------------------------------------------------------------------------------
 runTests <- function()
 {
-   #test_constructor()
-   test_request.small.100x()
-   test_request.large()
-   test_
+   test_constructor()
+
+   test_rreb1()   # depends on server restart: make -f makefile.pshannon unitTests, to load the meme file
+
+      # these next two tests do not tell me what meme file should
+      # be loaded into the FimoServer.  thus disabled until I make
+      # time to figure that out
+
+   #test_request.small.100x()
+   #test_request.large()
 
 } # runTests
 #------------------------------------------------------------------------------------------------------------------------
@@ -17,6 +23,7 @@ test_constructor <- function()
 {
    printf("--- test_constructor")
    fc <- FimoClient(FIMO_HOST, FIMO_PORT, quiet=FALSE)
+   checkEquals(is(fc), "FimoClientClass")
 
 } # test_constructor
 #------------------------------------------------------------------------------------------------------------------------
@@ -26,13 +33,17 @@ test_request.small.100x <- function()
    fc <- FimoClient(FIMO_HOST, FIMO_PORT, quiet=TRUE)
    sequences <- list(tert_wt1="CCCGGAGGGGG", tert_wt2="CCCGGGAGGGG", tert_mut= "CCCCTTCCGGG")
 
-   max <- 3
-   for(i in 1:max){
-      printf("--- request %d", i)
-      tbl <- requestMatch(fc, sequences)
-      checkTrue("data.frame" %in% is(tbl))
-      checkEquals(dim(tbl), c(4, 9))
-      } # for i
+   pval <- 0.1
+
+   tbl <- requestMatch(fc, sequences, pvalThreshold=pval)
+   dim(tbl)
+   checkTrue("data.frame" %in% is(tbl))
+   checkEquals(ncol(tbl), 9)
+   checkTrue(nrow(tbl) > 30)
+
+   pval <- 0.000001
+   tbl <- requestMatch(fc, sequences, pvalThreshold=pval)
+   checkEquals(dim(tbl), c(0,0))
 
 } # test_request.small.100x
 #------------------------------------------------------------------------------------------------------------------------
@@ -44,11 +55,12 @@ test_request.large <- function()
    count <- 1000
    sequences <- as.list(rep("CCCCTTCCGGG", count))
    names(sequences) <-  sprintf("tert_mut.%03d", 1:count)
+   pvalThreshold <- 0.001
 
    max <- 3
    for(i in 1:max){
       printf("--- request %d", i)
-      tbl <- requestMatch(fc, sequences)
+      tbl <- requestMatch(fc, sequences, pvalThreshold)
       checkTrue("data.frame" %in% is(tbl))
       expected.row.count <- 4 * count
       checkEquals(dim(tbl), c(expected.row.count, 9))
@@ -56,7 +68,7 @@ test_request.large <- function()
 
 } # test_request_large
 #------------------------------------------------------------------------------------------------------------------------
-test_MA0073.1 <- function()
+test_rreb1 <- function()
 {
    printf("--- test_MA0073.1")
    sequence <- list(test="CTTGGCCCCAGCACCCCCCGCCCCGAGGCCCGG")
@@ -66,7 +78,7 @@ test_MA0073.1 <- function()
      #  export(pfms, "rreb1.human.meme", 'meme')
 
    fc <- FimoClient(FIMO_HOST, FIMO_PORT, quiet=FALSE)
-   tbl.fimo <- requestMatch(fc, sequence)
+   tbl.fimo <- requestMatch(fc, sequence, pvalThreshold=0.0001)
    checkTrue(all(tbl.fimo$motif %in% c("Hsapiens-HOCOMOCOv10-RREB1_HUMAN.H10MO.D",
                                        "Hsapiens-SwissRegulon-RREB1.SwissRegulon",
                                        "Hsapiens-SwissRegulon-RREB1.SwissRegulon",
@@ -99,7 +111,7 @@ test_MA0073.1 <- function()
 
    checkTrue(all(tbl.fimo$motif %in% tbl.mm$motifName))
 
-} # test_MA0073.1
+} # test_rreb1
 #------------------------------------------------------------------------------------------------------------------------
 if(!interactive())
    runTests()

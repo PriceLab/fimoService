@@ -11,7 +11,7 @@ printf <- function(...) print(noquote(sprintf(...)))
                                   quiet="logical")
                             )
 #------------------------------------------------------------------------------------------------------------------------
-setGeneric("requestMatch", signature="obj", function(obj, sequences) standardGeneric("requestMatch"))
+setGeneric("requestMatch", signature="obj", function(obj, sequences, pvalThreshold) standardGeneric("requestMatch"))
 #------------------------------------------------------------------------------------------------------------------------
 FimoClient <- function(host, port, quiet=FALSE)
 {
@@ -42,14 +42,18 @@ FimoClient <- function(host, port, quiet=FALSE)
 #------------------------------------------------------------------------------------------------------------------------
 setMethod("requestMatch", "FimoClientClass",
 
-    function(obj, sequences){
+    function(obj, sequences, pvalThreshold){
        stopifnot(is.list(sequences))
        xyz <- "Fimoclient::requestMatch"
        if(is.null(names(sequences))){
            artificial.names <- sprintf("seq%04d", 1:length(sequences))
            names(sequences) <- artificial.names
            }
-       sequences.json.raw <- charToRaw(toJSON(sequences, auto_unbox=TRUE))
+       msg <- list(sequences=sequences, pvalThreshold=pvalThreshold)
+
+       sequences.json.raw <- charToRaw(toJSON(msg, auto_unbox=TRUE))
+       #sequences.json.raw <- charToRaw(toJSON(sequences, auto_unbox=TRUE))
+
        if(!obj@quiet)
            printf("sending %d sequences to server", length(sequences))
 
@@ -59,7 +63,7 @@ setMethod("requestMatch", "FimoClientClass",
 
        if(!obj@quiet){
           printf("response recieved from server")
-          printf("nchar(s): %d, %s", nchar(s), s)
+          printf("nchar(s): %d", nchar(s))
           }
 
        tbl.as.list <- fromJSON(s)
