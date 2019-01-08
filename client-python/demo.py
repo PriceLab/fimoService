@@ -15,7 +15,9 @@ print("Connecting to server...")
 socket = context.socket(zmq.REQ)
 socket.connect("tcp://%s:%s" % (hostname, port))
 
-msg = {"tert_wt1": "CCCGGAGGGGG", "tert_wt2": "CCCGGGAGGGG", "tert_mut": "CCCCTTCCGGG"}
+sequences = {"tert_wt1": "CCCGGAGGGGG", "tert_wt2": "CCCGGGAGGGG", "tert_mut": "CCCCTTCCGGG"}
+
+msg = {"sequences": sequences, "pvalThreshold": 0.01}
 
 for request in range (1,3):
     print("Sending request ", request,"...")
