@@ -1,5 +1,4 @@
 library(MotifDb)
-
-pfms <- query(MotifDb, c("sapiens", "RREB1"))
+pfms <- query(MotifDb, "sapiens", c("jaspar2018"))
 length(pfms)
-export(pfms, "rreb1.human.meme", 'meme')
+export(pfms, "human-jaspar2018.meme", 'meme')
