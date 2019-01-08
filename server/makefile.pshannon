@@ -3,7 +3,7 @@ FIMO="/Users/paul/meme/bin/fimo"
 #MOTIFS="/Users/paul/s/work/priceLab/cory/footprintWorkflow/JASPAR_CORE_plus_seth.meme"
 #MOTIFS="../pfms/JASPAR_CORE_plus_seth.meme"
 #MOTIFS="../pfms/MA0073.1.meme"
-MOTIFS="../pfms/jaspar2018.hocomoco.human.meme"
+#MOTIFS="../pfms/jaspar2018.hocomoco.human.meme"
 #MOTIFS="../pfms/rreb1.human.meme"
 #MOTIFS="../pfms/model03.pfms.meme"
 #MOTIFS="../pfms/rin3.trena.pfms.meme"
@@ -20,6 +20,14 @@ MOTIFS="../pfms/jaspar2018.hocomoco.human.meme"
 #MOTIFS="../pfms/current.meme"
 #MOTIFS="../pfms/inpp5d.meme"
 #MOTIFS="../pfms/athaliana.all.meme"
+#MOTIFS="../pfms/crem.human.meme"
+#MOTIFS="../pfms/nfkb2.human.meme"
+#MOTIFS="../pfms/nfkb1.human.meme"
+#MOTIFS="../pfms/hmbox1.human.meme"
+#MOTIFS="../pfms/nfix.meme"
+#MOTIFS="../pfms/human.jaspar2018.hocomoco.meme"
+MOTIFS="../pfms/gcm1.dlx3.human.meme"
+
 
 start:
 	python -i runFimoServer.py $(PORT) $(FIMO) $(MOTIFS)
