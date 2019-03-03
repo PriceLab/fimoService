@@ -5,7 +5,8 @@ export(
    )
 
 exportMethods(
-    requestMatch
+    requestMatch,
+    requestMatchForRegions
     )
 
 import(pbdZMQ)

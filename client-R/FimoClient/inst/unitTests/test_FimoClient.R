@@ -8,7 +8,10 @@ runTests <- function()
 {
    test_constructor()
 
-   test_rreb1()   # depends on server restart: make -f makefile.pshannon unitTests, to load the meme file
+     # depends on server restart:
+   # (cd ~/github/fimoService/server; make -f makefile.pshannon unitTests)
+     # to load the meme file
+   test_rreb1()
 
       # these next two tests do not tell me what meme file should
       # be loaded into the FimoServer.  thus disabled until I make
@@ -71,6 +74,7 @@ test_request.large <- function()
 test_rreb1 <- function()
 {
    printf("--- test_MA0073.1")
+
    sequence <- list(test="CTTGGCCCCAGCACCCCCCGCCCCGAGGCCCGG")
      # FimoServer started with "../pfms/rreb1.human.meme",
      # created in ~/github/fimoService/pfms/prepateMatrixFile.R
@@ -112,6 +116,16 @@ test_rreb1 <- function()
    checkTrue(all(tbl.fimo$motif %in% tbl.mm$motifName))
 
 } # test_rreb1
+#------------------------------------------------------------------------------------------------------------------------
+test_rreb1_regions <- function()
+{
+   printf("--- test_rreb1_regions")
+   tbl.regions <- data.frame(chrom="chr22", start=36253061, end=36253097, stringsAsFactors=FALSE)
+   fc <- FimoClient(FIMO_HOST, FIMO_PORT, quiet=FALSE)
+   tbl.fimo <- requestMatchForRegions(fc, tbl.regions, "hg38", pvalThreshold=0.000001)
+   checkTrue(length(grep("IRF1", tbl.fimo$motif)) > 4)
+
+} # test_rreb1_regions
 #------------------------------------------------------------------------------------------------------------------------
 if(!interactive())
    runTests()

@@ -1,8 +1,8 @@
 Package: FimoClient
 Type: Package
 Title: FimoClient: easy access to a FIMO ("Find Individual Motif Occurences") service
-Version: 0.99.9
-Date: 2019-01-08
+Version: 0.99.10
+Date: 2019-03-03
 Author: Paul Shannon
 Maintainer:  <pshannon@systemsbiology.org>
 Depends: R (>= 3.5.0), pbdZMQ (>= 0.3.3), jsonlite

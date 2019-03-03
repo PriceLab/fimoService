@@ -26,7 +26,8 @@ FIMO="/Users/paul/meme/bin/fimo"
 #MOTIFS="../pfms/hmbox1.human.meme"
 #MOTIFS="../pfms/nfix.meme"
 #MOTIFS="../pfms/human.jaspar2018.hocomoco.meme"
-MOTIFS="../pfms/gcm1.dlx3.human.meme"
+#MOTIFS="../pfms/gcm1.dlx3.human.meme"
+MOTIFS="../pfms/fli1.meme"
 
 
 start:
@@ -34,5 +35,6 @@ start:
 
 
 unitTests:
-	python -i runFimoServer.py $(PORT) $(FIMO) ../pfms/rreb1.human.meme
+	python -i runFimoServer.py 5000 $(FIMO) ../pfms/human-jaspar2018-hocomoco-swissregulon.meme
+        #rreb1.human.meme
 
