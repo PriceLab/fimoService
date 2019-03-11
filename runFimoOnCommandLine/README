@@ -1,0 +1,55 @@
+I created this directory when, after updating to meme suire 5.0.4 (11 mar 2019), the Fimoclient no longer worked.
+I eventually found that fimo now appends a few comment lines to its results.  these were included by pandas, and
+completely confused the table reconstruction in FimoClient.R.   The solution was to add "comment='#'" to
+the pandas read_csv function call:
+
+        tbl = pandas.read_csv(filename, delimiter="\t", comment='#')
+
+But to discover this problem, I needed some simple versions, command line and in R, to explore the problem.
+Hence this directory.
+
+----- simplest comand line
+  took GCN4.meme.txt from /local/users/pshannon/tools/meme-5.0.4/tests/fimo/GCN4.meme.txt
+  took GCN4_YPD.fasta from /local/users/pshannon/tools/meme-5.0.4/tests/fimo/GCN4_YPD.fasta
+
+ ~/meme/bin/fimo GCN4.meme.txt GCN4_YPD.fasta
+
+  produces, in fimo_out/
+      19768 Mar 11 08:33 cisml.xml
+      13364 Mar 11 08:33 fimo.gff
+      43950 Mar 11 08:33 fimo.html
+       6339 Mar 11 08:33 fimo.tsv
+       2390 Mar 11 08:33 fimo.xml
+
+  with these extra lines at the bottom of fimo.tsv:
+    MA0303.1	GCN4	iYBR249C	316	336	+	9.85556	9.88e-05	0.0811	TCATCGTTGAGTCATTTCGCA
+
+    # FIMO (Find Individual Motif Occurrences): Version 5.0.4 compiled on Mar 10 2019 at 20:32:32
+    # The format of this file is described at http://meme-suite.org/doc/fimo-output-format.html.
+    # fimo GCN4.meme.txt GCN4_YPD.fasta
+
+---- simplest use of FimoClient.R
+   found in fimo_out/fimo.tsv
+     MA0303.1	GCN4	iYHR018C	181	201	+	16.4778	8.29e-07	0.035	CAAAAAGTGAGTCATTCATCT
+   looked in GCN4_YPD.fasta for that larger sequence from which that came:
+   expanded those ~20 bases to 100
+   >iYHR018C
+   AGTGCCGTCTGACA
+
+   creating these lines in cherryMatch.R
+    library(FimoClient)
+    FIMO_HOST <- "localhost"
+    FIMO_PORT <- 5000
+    fc <- FimoClient(FIMO_HOST, FIMO_PORT, quiet=FALSE)
+    sequence <- list(cherry="CGCTGACCTTTTATAATCCTTTTTTTTTTTTTTCACATGTTTCAATTTGCGCCAGCTTATCCAAAAAGTGAGTCATTCATCTACTAATCATGATTTTCGGGATTCTGCCAATGAGTAACCACCACAAGAACGAACAAATAAT")
+    requestMatch(fc, sequence, pvalThreshold=0.0011)
+
+---- problems solved with the extra "comment" arg to pandas.read_csv
+
+
+
+   
+
+
+  
+   
