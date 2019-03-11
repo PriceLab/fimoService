@@ -110,7 +110,13 @@ setMethod("requestMatchForRegions", "FimoClientClass",
        require(BSgenome.Hsapiens.UCSC.hg38)
        sequences <- as.list(as.character(getSeq(BSgenome.Hsapiens.UCSC.hg38,
                                                 tbl.regions$chrom, tbl.regions$start, tbl.regions$end)))
-       requestMatch(obj, sequences, pvalThreshold)
+       names(sequences) <- sprintf("%s:%d-%d", tbl.regions$chrom, tbl.regions$start, tbl.regions$end)
+       if(!obj@quiet)
+           printf("requesting matches for %d sequences", length(sequences))
+       result <- requestMatch(obj, sequences, pvalThreshold)
+       if(!obj@quiet)
+           printf("   got %d hits", nrow(result))
+       result
        }) # request
 
 #------------------------------------------------------------------------------------------------------------------------
