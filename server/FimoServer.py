@@ -58,10 +58,12 @@ class FimoServer:
 
       devnull = open(os.devnull, 'w')
       processStatus = subprocess.check_call(args, stdout=devnull, stderr=devnull)
-      tbl = pandas.DataFrame()
       if(processStatus == 0):
          filename = "%s/%s" % (outputDirectory, "fimo.tsv")
-         tbl = pandas.read_csv(filename, delimiter="\t", comment='#')
+         try:
+            tbl = pandas.read_csv(filename, delimiter="\t", comment='#')
+         except:
+            tbl = pandas.DataFrame()
       shutil.rmtree(outputDirectory)
       print("deleted directory %s" % outputDirectory)
       os.remove(sequencesFile)
