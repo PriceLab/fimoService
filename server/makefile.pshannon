@@ -1,5 +1,5 @@
 PORT=5558
-FIMO="/Users/paul/meme/bin/fimo"
+FIMO="/users/pshannon/meme/bin/fimo"
 #MOTIFS="/Users/paul/s/work/priceLab/cory/footprintWorkflow/JASPAR_CORE_plus_seth.meme"
 #MOTIFS="../pfms/JASPAR_CORE_plus_seth.meme"
 #MOTIFS="../pfms/MA0073.1.meme"
@@ -27,7 +27,8 @@ FIMO="/Users/paul/meme/bin/fimo"
 #MOTIFS="../pfms/nfix.meme"
 #MOTIFS="../pfms/human.jaspar2018.hocomoco.meme"
 #MOTIFS="../pfms/gcm1.dlx3.human.meme"
-MOTIFS="../pfms/fli1.meme"
+#MOTIFS="../pfms/fli1.meme"
+MOTIFS="../pfms/human-klf1-fli1.meme"
 
 
 start:

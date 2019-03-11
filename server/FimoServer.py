@@ -15,7 +15,6 @@ class FimoServer:
    host = "localhost"
    port = 6123
    fimoExecutable = ""
-   motifsVile = ""
    socketContext = None
    socket = None
 
@@ -61,8 +60,8 @@ class FimoServer:
       processStatus = subprocess.check_call(args, stdout=devnull, stderr=devnull)
       tbl = pandas.DataFrame()
       if(processStatus == 0):
-         filename = "%s/%s" % (outputDirectory, "fimo.txt")
-         tbl = pandas.read_csv(filename, delimiter="\t")
+         filename = "%s/%s" % (outputDirectory, "fimo.tsv")
+         tbl = pandas.read_csv(filename, delimiter="\t", comment='#')
       shutil.rmtree(outputDirectory)
       print("deleted directory %s" % outputDirectory)
       os.remove(sequencesFile)
