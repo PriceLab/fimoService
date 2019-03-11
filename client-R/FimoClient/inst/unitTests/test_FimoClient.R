@@ -2,16 +2,18 @@ library(FimoClient)
 library(RUnit)
 #------------------------------------------------------------------------------------------------------------------------
 FIMO_HOST <- "localhost"
-FIMO_PORT <- 5000
+FIMO_PORT <- 5558
+if(!exists("fc"))
+    fc <- FimoClient(FIMO_HOST, FIMO_PORT, quiet=FALSE)
 #------------------------------------------------------------------------------------------------------------------------
 runTests <- function()
 {
    test_constructor()
-
+   test_.jsonToDataFrame()
      # depends on server restart:
-   # (cd ~/github/fimoService/server; make -f makefile.pshannon unitTests)
+     # (cd ~/github/fimoService/server; make -f makefile.pshannon unitTests)
      # to load the meme file
-   test_rreb1()
+   #test_rreb1()
 
       # these next two tests do not tell me what meme file should
       # be loaded into the FimoServer.  thus disabled until I make
@@ -25,7 +27,6 @@ runTests <- function()
 test_constructor <- function()
 {
    printf("--- test_constructor")
-   fc <- FimoClient(FIMO_HOST, FIMO_PORT, quiet=FALSE)
    checkEquals(is(fc), "FimoClientClass")
 
 } # test_constructor
@@ -126,6 +127,32 @@ test_rreb1_regions <- function()
    checkTrue(length(grep("IRF1", tbl.fimo$motif)) > 4)
 
 } # test_rreb1_regions
+#------------------------------------------------------------------------------------------------------------------------
+# new explicit data.frame creation from json after upgrading - painfully! - to fimo 5.0.4
+test_.jsonToDataFrame <- function()
+{
+   printf("--- test_.jsonToDataFrame")
+    
+   tbl <- requestMatch(fc, list(klf1="ATCGATCGAAGGGTGAGGCATCGATCG"), 10e-4)
+   checkEquals(dim(tbl), c(1, 9))
+   checkEquals(tbl$motif, "Hsapiens-SwissRegulon-KLF1.SwissRegulon")
+   checkEquals(tbl$sequence_name, "klf1")
+   checkEquals(tbl$matched_sequence, "AAGGGTGAGGC")
+   checkTrue(tbl$score > 13)
+   checkTrue(tbl$qValue < 0.0005)
+               
+   tbl <- requestMatch(fc, list(klf1 = "ATCGATCGAAGGGTGAGGCATCGATCG", fli1 = "ACTACAGGAAGTGGCAGCAGCAGCAGCAG"), pvalThreshold=10e-4)
+   checkEquals(dim(tbl), c(2, 9))
+
+   tbl <- requestMatch(fc, list(bogus=LETTERS), pvalThreshold=10e-4)
+   checkEquals(dim(tbl), c(0, 9))
+   
+   #   produces this, after rawToChar(msg.raw)
+   #  "{\"motif_id\":{\"0\":\"Hsapiens-SwissRegulon-KLF1.SwissRegulon\"},\"motif_alt_id\":{\"0\":null},\"sequence_name\":{\"0\":\"klf1\"},\"start\":{\"0\":9},\"stop\":{\"0\":19},\"strand\":{\"0\":\"+\"},\"score\":{\"0\":13.7528},\"p-value\":{\"0\":0.0000137},\"q-value\":{\"0\":0.000466},\"matched_sequence\":{\"0\":\"AAGGGTGAGGC\"}}"
+   # requestMatch(fc, list(klf1 = "ATCGATCGAAGGGTGAGGCATCGATCG", fli1 = "ACTACAGGAAGTGGCAGCAGCAGCAGCAG"), produces this
+   #  "{\"motif_id\":{\"0\":\"Hsapiens-jaspar2018-FLI1-MA0475.1\",\"1\":\"Hsapiens-SwissRegulon-KLF1.SwissRegulon\"},\"motif_alt_id\":{\"0\":null,\"1\":null},\"sequence_name\":{\"0\":\"fli1\",\"1\":\"klf1\"},\"start\":{\"0\":4,\"1\":9},\"stop\":{\"0\":14,\"1\":19},\"strand\":{\"0\":\"+\",\"1\":\"+\"},\"score\":{\"0\":17.6067,\"1\":13.7528},\"p-value\":{\"0\":0.000000205,\"1\":0.0000137},\"q-value\":{\"0\":0.0000147,\"1\":0.000987},\"matched_sequence\":{\"0\":\"ACAGGAAGTGG\",\"1\":\"AAGGGTGAGGC\"}}"
+
+} # study_JSON.table.parsing.problem
 #------------------------------------------------------------------------------------------------------------------------
 if(!interactive())
    runTests()
