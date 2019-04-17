@@ -73,7 +73,6 @@ setMethod("requestMatch", "FimoClientClass",
 
     function(obj, sequences, pvalThreshold){
        stopifnot(is.list(sequences))
-       xyz <- "Fimoclient::requestMatch"
        if(is.null(names(sequences))){
            artificial.names <- sprintf("seq%04d", 1:length(sequences))
            names(sequences) <- artificial.names
@@ -97,7 +96,7 @@ setMethod("requestMatch", "FimoClientClass",
        if(nchar(character.response) == 0)
            return(data.frame())
 
-       tbl.fimo <- return(.jsonToDataFrame(character.response))
+       tbl.fimo <- .jsonToDataFrame(character.response)
        return(tbl.fimo)
        }) # request
 
@@ -114,10 +113,53 @@ setMethod("requestMatchForRegions", "FimoClientClass",
        names(sequences) <- sprintf("%s:%d-%d", tbl.regions$chrom, tbl.regions$start, tbl.regions$end)
        if(!obj@quiet)
            printf("requesting matches for %d sequences", length(sequences))
-       result <- requestMatch(obj, sequences, pvalThreshold)
+       tbl.fimo <- requestMatch(obj, sequences, pvalThreshold)
+       tbl.locs <- .expandChromLocStrings(tbl.fimo$sequence_name)
+
+       #browser()
+       #xyz <- "add chromLoc"
+
+       tbl.fimo$start <- tbl.fimo$start + tbl.locs$start
+       tbl.fimo$end <- tbl.fimo$stop + tbl.locs$start
+       tbl.fimo$chrom <- tbl.locs$chrom
+       coi <- c("chrom", "start", "end", "motif", "strand", "score", "pValue", "qValue", "matched_sequence")
+       tbl.out <- tbl.fimo[, coi]
        if(!obj@quiet)
-           printf("   got %d hits", nrow(result))
-       result
+           printf("   got %d hits", nrow(tbl.out))
+       tbl.out
        }) # request
 
+#------------------------------------------------------------------------------------------------------------------------
+.parseChromLocString <- function(chromLocString)
+{
+    chromLocString <- gsub(",", "", chromLocString);
+    tokens.0 <- strsplit(chromLocString, ":", fixed=TRUE)[[1]]
+    stopifnot(length(tokens.0) == 2)
+    chrom <- tokens.0[1]
+    if(!grepl("chr", chrom))
+        chrom <- sprintf("chr%s", chrom)
+
+    tokens.1 <- strsplit(tokens.0[2], "-")[[1]]
+    stopifnot(length(tokens.1) == 2)
+    start <- as.integer(tokens.1[1])
+    end <- as.integer(tokens.1[2])
+
+    return(list(chrom=chrom, start=start, end=end))
+
+} # .parseChromLocString
+#------------------------------------------------------------------------------------------------------------------------
+.expandChromLocStrings <- function(chromLocStrings)
+{
+   locs <- lapply(chromLocStrings, .parseChromLocString)
+   tbl.locs <- as.data.frame(do.call(rbind, locs))
+
+     #  all the new columns are lists().  throw away that structure:
+
+   tbl.locs$chrom <- as.character(tbl.locs$chrom)
+   tbl.locs$start <- as.numeric(tbl.locs$start)
+   tbl.locs$end <- as.numeric(tbl.locs$end)
+
+   tbl.locs
+
+} # .expandChromLocStrings
 #------------------------------------------------------------------------------------------------------------------------
