@@ -2,25 +2,28 @@ library(FimoClient)
 library(RUnit)
 #------------------------------------------------------------------------------------------------------------------------
 FIMO_HOST <- "localhost"
-FIMO_PORT <- 5558
+FIMO_PORT <- 600159
+if(!exists("fimoServerStarted")){
+   fimoServerStarted <- TRUE
+   meme.file <- system.file(package="FimoClient", "extdata", "human.jaspar2018.meme")
+   stopifnot(file.exists(meme.file))
+   cmd <- sprintf("make -f ~/github/fimoService/server/makefile PORT=%d MOTIFS=%s", FIMO_PORT, meme.file)
+   print(cmd)
+   system(cmd)
+   printf("--- sleeping 5, making sure fimo server is awake")
+   Sys.sleep(5)
+   }
+
 if(!exists("fc"))
     fc <- FimoClient(FIMO_HOST, FIMO_PORT, quiet=FALSE)
+
+
 #------------------------------------------------------------------------------------------------------------------------
 runTests <- function()
 {
    test_constructor()
    test_.jsonToDataFrame()
-     # depends on server restart:
-     # (cd ~/github/fimoService/server; make -f makefile.pshannon unitTests)
-     # to load the meme file
-   #test_rreb1()
-
-      # these next two tests do not tell me what meme file should
-      # be loaded into the FimoServer.  thus disabled until I make
-      # time to figure that out
-
-   #test_request.small.100x()
-   #test_request.large()
+   test_matchTert()
 
 } # runTests
 #------------------------------------------------------------------------------------------------------------------------
@@ -31,30 +34,29 @@ test_constructor <- function()
 
 } # test_constructor
 #------------------------------------------------------------------------------------------------------------------------
-test_request.small.100x <- function()
+test_matchTert <- function()
 {
-   printf("--- test_request.small.100x")
-   fc <- FimoClient(FIMO_HOST, FIMO_PORT, quiet=TRUE)
+   printf("--- test_matchTert")
+
    sequences <- list(tert_wt1="CCCGGAGGGGG", tert_wt2="CCCGGGAGGGG", tert_mut= "CCCCTTCCGGG")
 
-   pval <- 0.1
+   pval <- 0.001
 
    tbl <- requestMatch(fc, sequences, pvalThreshold=pval)
    dim(tbl)
    checkTrue("data.frame" %in% is(tbl))
    checkEquals(ncol(tbl), 9)
-   checkTrue(nrow(tbl) > 30)
+   checkTrue(nrow(tbl) > 10)
 
-   pval <- 0.000001
+   pval <- 0.00000001
    tbl <- requestMatch(fc, sequences, pvalThreshold=pval)
-   checkEquals(dim(tbl), c(0,0))
+   checkEquals(nrow(tbl), 0)
 
-} # test_request.small.100x
+} # test_matchTert
 #------------------------------------------------------------------------------------------------------------------------
 test_request.large <- function()
 {
    printf("--- test_request.large")
-   fc <- FimoClient(FIMO_HOST, FIMO_PORT, quiet=TRUE)
 
    count <- 1000
    sequences <- as.list(rep("CCCCTTCCGGG", count))
@@ -82,8 +84,8 @@ test_rreb1 <- function()
      #   pfms <- query(MotifDb, c("sapiens", "RREB1"))
      #  export(pfms, "rreb1.human.meme", 'meme')
 
-   fc <- FimoClient(FIMO_HOST, FIMO_PORT, quiet=FALSE)
    tbl.fimo <- requestMatch(fc, sequence, pvalThreshold=0.0001)
+   dim(tbl.fimo)
    checkTrue(all(tbl.fimo$motif %in% c("Hsapiens-HOCOMOCOv10-RREB1_HUMAN.H10MO.D",
                                        "Hsapiens-SwissRegulon-RREB1.SwissRegulon",
                                        "Hsapiens-SwissRegulon-RREB1.SwissRegulon",
@@ -122,7 +124,7 @@ test_rreb1_regions <- function()
 {
    printf("--- test_rreb1_regions")
    tbl.regions <- data.frame(chrom="chr22", start=36253061, end=36253097, stringsAsFactors=FALSE)
-   fc <- FimoClient(FIMO_HOST, FIMO_PORT, quiet=FALSE)
+
    tbl.fimo <- requestMatchForRegions(fc, tbl.regions, "hg38", pvalThreshold=0.000001)
    checkTrue(length(grep("IRF1", tbl.fimo$motif)) > 4)
 
@@ -132,21 +134,23 @@ test_rreb1_regions <- function()
 test_.jsonToDataFrame <- function()
 {
    printf("--- test_.jsonToDataFrame")
-    
+
    tbl <- requestMatch(fc, list(klf1="ATCGATCGAAGGGTGAGGCATCGATCG"), 10e-4)
-   checkEquals(dim(tbl), c(1, 9))
-   checkEquals(tbl$motif, "Hsapiens-SwissRegulon-KLF1.SwissRegulon")
-   checkEquals(tbl$sequence_name, "klf1")
-   checkEquals(tbl$matched_sequence, "AAGGGTGAGGC")
-   checkTrue(tbl$score > 13)
-   checkTrue(tbl$qValue < 0.0005)
-               
-   tbl <- requestMatch(fc, list(klf1 = "ATCGATCGAAGGGTGAGGCATCGATCG", fli1 = "ACTACAGGAAGTGGCAGCAGCAGCAGCAG"), pvalThreshold=10e-4)
-   checkEquals(dim(tbl), c(2, 9))
+   dim(tbl)
+   checkEquals(ncol(tbl), 9)
+   checkTrue(nrow(tbl) > 30)
+   checkTrue("Hsapiens-jaspar2018-KLF5-MA0599.1" %in% tbl$motif)
+   checkTrue(all(tbl$sequence_name == "klf1"))
+   checkTrue("GCCTCACCCT" %in% tbl$matched_sequence)
+   checkTrue(tbl$score[1] > 10)
+   checkTrue(tbl$qValue[1] < 0.0025)
+
+   tbl <- requestMatch(fc, list(klf1 = "ATCGATCGAAGGGTGAGGCATCGATCG", fli1 = "ACTACAGGAAGTGGCAGCAGCAGCAGCAG"), pvalThreshold=1e-4)
+   checkTrue(nrow(tbl) > 20)
 
    tbl <- requestMatch(fc, list(bogus=LETTERS), pvalThreshold=10e-4)
    checkEquals(dim(tbl), c(0, 9))
-   
+
    #   produces this, after rawToChar(msg.raw)
    #  "{\"motif_id\":{\"0\":\"Hsapiens-SwissRegulon-KLF1.SwissRegulon\"},\"motif_alt_id\":{\"0\":null},\"sequence_name\":{\"0\":\"klf1\"},\"start\":{\"0\":9},\"stop\":{\"0\":19},\"strand\":{\"0\":\"+\"},\"score\":{\"0\":13.7528},\"p-value\":{\"0\":0.0000137},\"q-value\":{\"0\":0.000466},\"matched_sequence\":{\"0\":\"AAGGGTGAGGC\"}}"
    # requestMatch(fc, list(klf1 = "ATCGATCGAAGGGTGAGGCATCGATCG", fli1 = "ACTACAGGAAGTGGCAGCAGCAGCAGCAG"), produces this

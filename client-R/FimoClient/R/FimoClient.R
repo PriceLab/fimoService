@@ -97,7 +97,8 @@ setMethod("requestMatch", "FimoClientClass",
        if(nchar(character.response) == 0)
            return(data.frame())
 
-       return(.jsonToDataFrame(character.response))
+       tbl.fimo <- return(.jsonToDataFrame(character.response))
+       return(tbl.fimo)
        }) # request
 
 #------------------------------------------------------------------------------------------------------------------------
