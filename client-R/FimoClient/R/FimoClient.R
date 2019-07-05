@@ -106,18 +106,31 @@ setMethod("requestMatchForRegions", "FimoClientClass",
     function(obj, tbl.regions, genomeName, pvalThreshold){
        stopifnot(is.data.frame(tbl.regions))
        stopifnot(all(c("chrom", "start", "end") %in% colnames(tbl.regions)))
-       stopifnot(genomeName %in% c("hg38"))
-       require(BSgenome.Hsapiens.UCSC.hg38)
-       sequences <- as.list(as.character(getSeq(BSgenome.Hsapiens.UCSC.hg38,
-                                                tbl.regions$chrom, tbl.regions$start, tbl.regions$end)))
-       names(sequences) <- sprintf("%s:%d-%d", tbl.regions$chrom, tbl.regions$start, tbl.regions$end)
+
+       stopifnot(genomeName %in% c("hg38", "tair10"))
+
+       if(genomeName == "hg38"){
+          require(BSgenome.Hsapiens.UCSC.hg38)
+          sequences <- as.list(as.character(getSeq(BSgenome.Hsapiens.UCSC.hg38,
+                                                   tbl.regions$chrom, tbl.regions$start, tbl.regions$end)))
+          names(sequences) <- sprintf("%s:%d-%d", tbl.regions$chrom, tbl.regions$start, tbl.regions$end)
+          } # hg38
+       if(genomeName == "tair10"){
+          require(BSgenome.Athaliana.TAIR.TAIR9)
+          chrom.name <- tbl.regions$chrom
+             # tair9 (aka tair10?) need the chromsome ("sequence") names: Chr1 Chr2 Chr3 Chr4 Chr5 ChrM ChrC
+          if(all(nchar(chrom.name) < 2))
+             tbl.regions$chrom <- sprintf("chr%s", chrom.name)
+          tbl.regions$chrom <- sub("chr", "Chr", tbl.regions$chrom)
+          sequences <- as.list(as.character(getSeq(BSgenome.Athaliana.TAIR.TAIR9,
+                                                   tbl.regions$chrom, tbl.regions$start, tbl.regions$end)))
+          names(sequences) <- sprintf("%s:%d-%d", tbl.regions$chrom, tbl.regions$start, tbl.regions$end)
+          } # tair10
+
        if(!obj@quiet)
            printf("requesting matches for %d sequences", length(sequences))
        tbl.fimo <- requestMatch(obj, sequences, pvalThreshold)
        tbl.locs <- .expandChromLocStrings(tbl.fimo$sequence_name)
-
-       #browser()
-       #xyz <- "add chromLoc"
 
        tbl.fimo$start <- tbl.fimo$start + tbl.locs$start
        tbl.fimo$end <- tbl.fimo$stop + tbl.locs$start

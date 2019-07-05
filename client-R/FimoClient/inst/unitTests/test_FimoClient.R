@@ -56,9 +56,9 @@ test_matchTert <- function()
 
 } # test_matchTert
 #------------------------------------------------------------------------------------------------------------------------
-test_matchByRegion <- function()
+test_hg38.matchByRegion <- function()
 {
-   printf("--- test_matchByRegion")
+   printf("--- test_hg38.matchByRegion")
         # part of proximal promoter of gata2
    tbl.regions <- data.frame(chrom="chr3",
                              start=c(128488353-1000, 128488353+1000),
@@ -73,7 +73,23 @@ test_matchByRegion <- function()
    checkTrue(all(tbl$end <= 128493411))
    checkTrue(all(tbl$chrom == "chr3"))
 
-} # test_matchByRegion
+} # test_hg38.matchByRegion
+#------------------------------------------------------------------------------------------------------------------------
+test_tair10.matchByRegion <- function()
+{
+   printf("--- test_tair10.matchByRegion")
+        # part of proximal promiter of WBC19, AT3G55130
+   fc <- FimoClient("localhost", 60001)
+   tbl.regions <- data.frame(chrom="3", start=20434092, end=20438604, stringsAsFactors=FALSE)
+   tbl <- requestMatchForRegions(fc, tbl.regions, "tair10", 1e-6)
+   checkEquals(ncol(tbl), 9)
+   checkEquals(colnames(tbl), c("chrom", "start", "end", "motif", "strand", "score", "pValue", "qValue", "matched_sequence"))
+   checkTrue(nrow(tbl) > 50)
+   checkTrue(all(tbl$start >= 128486353))
+   checkTrue(all(tbl$end <= 128493411))
+   checkTrue(all(tbl$chrom == "chr3"))
+
+} # test_tair10.matchByRegion
 #------------------------------------------------------------------------------------------------------------------------
 # new explicit data.frame creation from json after upgrading - painfully! - to fimo 5.0.4
 test_.jsonToDataFrame <- function()
