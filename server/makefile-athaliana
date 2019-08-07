@@ -1,4 +1,4 @@
-PORT=60022
+PORT=60029
 FIMO="$(HOME)/meme/bin/fimo"
 MOTIFS="../pfms/athaliana-452-jaspar2018.meme"
 PYTHON_SCRIPT=$(HOME)/github/fimoService/server/runFimoServer.py
