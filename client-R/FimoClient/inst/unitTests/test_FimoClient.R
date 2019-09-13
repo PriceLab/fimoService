@@ -25,7 +25,7 @@ runTests <- function()
    test_.jsonToDataFrame()
    test_.expandChromLocStrings()
    test_matchTert()
-   test_matchByRegion()
+   test_hg38.matchByRegion()
 
 } # runTests
 #------------------------------------------------------------------------------------------------------------------------

@@ -21,7 +21,7 @@ FimoClient <- function(host, port, quiet=FALSE)
     socketContext <- init.context()
     socket <- init.socket(socketContext, "ZMQ_REQ")
     uri <- sprintf("tcp://%s:%d", host, port)
-    connect.socket(socket, uri)
+    status <- connect.socket(socket, uri)
 
     if(!quiet)
        printf("attempting socket connection to %s", uri)
@@ -43,8 +43,6 @@ FimoClient <- function(host, port, quiet=FALSE)
 # toJSON/unlist/do.call sequence no longer works.   here is more transparent approach.
 .jsonToDataFrame <- function(jsonString)
 {
-  # browser()
-  # xzy <- "entering .jsonToDataFrame, with jsonString"
 
   x2 <- fromJSON(jsonString)
   x3 <-lapply(x2, function(element) unlist(element, use.names=FALSE))
