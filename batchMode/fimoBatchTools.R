@@ -2,6 +2,7 @@ library(RUnit)
 library(GenomicRanges)
 library(org.Hs.eg.db)
 library(BSgenome.Hsapiens.UCSC.hg38)
+library(BSgenome.Hsapiens.UCSC.hg19)
 library(Biostrings)
 library(MotifDb)
 #------------------------------------------------------------------------------------------------------------------------
@@ -15,9 +16,14 @@ runTests <- function()
 
 } # runTests
 #------------------------------------------------------------------------------------------------------------------------
-createFastaFileForFimo <- function(tbl.regions, fastaFileName)
+createFastaFileForFimo <- function(tbl.regions, fastaFileName, genome)
 {
-   sequences <- with(tbl.regions, getSeq(BSgenome.Hsapiens.UCSC.hg38, chrom, start, end))
+   stopifnot(genome %in% c("hg38", "hg19"))
+
+   if(genome == "hg38")
+     sequences <- with(tbl.regions, getSeq(BSgenome.Hsapiens.UCSC.hg38, chrom, start, end))
+   if(genome == "hg19")
+     sequences <- with(tbl.regions, getSeq(BSgenome.Hsapiens.UCSC.hg19, chrom, start, end))
 
    if(is(sequences, "DNAString"))
        sequences <- DNAStringSet(sequences)
@@ -34,7 +40,7 @@ test_createFastaFileForFimo <- function()
 
      # a < 1kb region in the promoter of GATA2, where TBX15 hits may be found
    tbl.regions <- data.frame(chrom="chr3", start=128497569, end=128498329, stringsAsFactors=FALSE)
-   createFastaFileForFimo(tbl.regions, "smallTest.fa")
+   createFastaFileForFimo(tbl.regions, "smallTest.fa", "hg38")
    checkTrue(file.exists("smallTest.fa"))
    x <- readDNAStringSet("smallTest.fa")
    checkEquals(length(x), 1)
@@ -43,7 +49,7 @@ test_createFastaFileForFimo <- function()
                                start=c(128497569, 128498569),
                                end=  c(128498329, 128498589),
                                stringsAsFactors=FALSE)
-   createFastaFileForFimo(tbl.regions.2, "smallTest2.fa")
+   createFastaFileForFimo(tbl.regions.2, "smallTest2.fa", "hg19")
    x <- readDNAStringSet("smallTest2.fa")
    checkEquals(length(x), 2)
 
@@ -101,7 +107,7 @@ runFimoGATA2.big <- function()
      dir.create (resultsDirectory)
 
    fastaFilename <- file.path(resultsDirectory, "test.fa")
-   createFastaFileForFimo(tbl.regions, fastaFilename)
+   createFastaFileForFimo(tbl.regions, fastaFilename, "hg38")
    checkTrue(file.exists(fastaFilename))
    checkTrue(file.size(fastaFilename) > with(tbl.regions, end-start))  # bigger than the base count
 
@@ -153,7 +159,7 @@ test_fixMotifNamesTruncatedAt100characters <- function()
      dir.create (resultsDirectory)
 
    fastaFilename <- file.path(resultsDirectory, "test.fa")
-   createFastaFileForFimo(tbl.regions, fastaFilename)
+   createFastaFileForFimo(tbl.regions, fastaFilename, "hg38")
    checkTrue(file.exists(fastaFilename))
    checkTrue(file.size(fastaFilename) > with(tbl.regions, end-start))  # bigger than the base count
 
@@ -243,7 +249,7 @@ fimoBatch <- function(tbl.regions, matchThreshold)
      dir.create (resultsDirectory)
 
    fastaFilename <- file.path(resultsDirectory, "forFimo.fa")
-   createFastaFileForFimo(tbl.regions, fastaFilename)
+   createFastaFileForFimo(tbl.regions, fastaFilename, "hg38")
 
    system.time(runFimo(fastaFilename, resultsDirectory, threshold=matchThreshold))
    fimo.results.file <- file.path(resultsDirectory, "forFimo.tsv")
@@ -281,4 +287,3 @@ test_fimoBatch <- function()
 
 } # test_fimoBatch
 #------------------------------------------------------------------------------------------------------------------------
-# if(!interactive()) test_runFimoBig()
