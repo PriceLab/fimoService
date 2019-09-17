@@ -55,11 +55,12 @@ test_createFastaFileForFimo <- function()
 
 } # test_createFastaFileForFimo
 #------------------------------------------------------------------------------------------------------------------------
-runFimo <- function(fastaFileName, resultsDirectory, threshold=5e-4)
+runFimo <- function(fastaFileName, resultsDirectory, threshold=1e-4,
+                    pwmFile="~/github/fimoService/pfms/human-jaspar2018-hocomoco-swissregulon.meme")
 {
    printf("--- running FIMO")
    FIMO <- file.path(Sys.getenv("HOME"), "meme", "bin", "fimo")  # true on both hagfish & khaleesi
-   MOTIFS <- "~/github/fimoService/pfms/human-jaspar2018-hocomoco-swissregulon.meme"
+   MOTIFS <- pwmFile
    #cmd <- sprintf("%s --oc %s --thresh -%f --text --verbosity 1 %s %s",
    #               FIMO, resultsDirectory, threshold, MOTIFS, fastaFileName)
 
