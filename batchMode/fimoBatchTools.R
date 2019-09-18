@@ -242,7 +242,7 @@ test_expandFimoTable <- function(tbl)
 
 } # test_expandFimoTable
 #------------------------------------------------------------------------------------------------------------------------
-fimoBatch <- function(tbl.regions, matchThreshold)
+fimoBatch <- function(tbl.regions, matchThreshold, genomeName, pwmFile)
 {
    resultsDirectory <- tempdir()
 
@@ -250,15 +250,21 @@ fimoBatch <- function(tbl.regions, matchThreshold)
      dir.create (resultsDirectory)
 
    fastaFilename <- file.path(resultsDirectory, "forFimo.fa")
-   createFastaFileForFimo(tbl.regions, fastaFilename, "hg38")
+   createFastaFileForFimo(tbl.regions, fastaFilename, genomeName)
 
-   system.time(runFimo(fastaFilename, resultsDirectory, threshold=matchThreshold))
+   system.time(runFimo(fastaFilename, resultsDirectory, threshold=matchThreshold, pwmFile=pwmFile))
    fimo.results.file <- file.path(resultsDirectory, "forFimo.tsv")
-   checkTrue(file.exists(fimo.results.file))
 
-   tbl <- read.table(fimo.results.file, sep="\t", as.is=TRUE, nrow=-1, header=TRUE)  # two chopped names
-   tbl.fixed <- fixMotifNamesTruncatedAt100characters(tbl)
-   tbl.expanded <- expandFimoTable(tbl.fixed)
+   tbl.expanded <- data.frame()  # in case nothing is found
+
+   if(file.exists(fimo.results.file)){
+      if(file.size(fimo.results.file) > 0){
+         tbl <- read.table(fimo.results.file, sep="\t", as.is=TRUE, nrow=-1, header=TRUE)  # two chopped names
+         tbl.fixed <- fixMotifNamesTruncatedAt100characters(tbl)
+         tbl.expanded <- expandFimoTable(tbl.fixed)
+         } # if non-zero size
+      } # if results file exiss
+
    invisible(tbl.expanded)
 
 } # fimoBatch
@@ -272,7 +278,8 @@ test_fimoBatch <- function()
    end.loc <- start.loc + 30
    end.loc.2 <- start.loc.2 + 1000
    tbl.regions <- data.frame(chrom="chr3", start=start.loc, end=end.loc, stringsAsFactors=FALSE)
-   tbl.match <- fimoBatch(tbl.regions, 1e-5)
+   tbl.match <- fimoBatch(tbl.regions, 1e-5, genomeName="hg38",
+                          pwmFile="~/github/fimoService/pfms/human-jaspar2018-hocomoco-swissregulon.meme")
    checkEquals(dim(tbl.match), c(13, 9))
 
      # now send two regions
@@ -280,11 +287,12 @@ test_fimoBatch <- function()
                                start=c(start.loc, start.loc.2),
                                end=c(end.loc,     end.loc.2),
                                stringsAsFactors=FALSE)
-   tbl.match.2 <- fimoBatch(tbl.regions.2, 1e-6)
+   tbl.match.2 <- fimoBatch(tbl.regions.2, 1e-6, genomeName="hg38",
+                            pwmFile="~/github/fimoService/pfms/human-jaspar2018-hocomoco-swissregulon.meme")
    checkEquals(dim(tbl.match.2), c(7, 9))
      # make sure that both regions were used
    checkEquals(length(which(tbl.match.2$start < start.loc)), 4)
    checkEquals(length(which(tbl.match.2$start > start.loc)), 3)
 
 } # test_fimoBatch
-#------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------
