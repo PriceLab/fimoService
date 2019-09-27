@@ -58,7 +58,7 @@ test_createFastaFileForFimo <- function()
 runFimo <- function(fastaFileName, resultsDirectory, threshold=1e-4,
                     pwmFile="~/github/fimoService/pfms/human-jaspar2018-hocomoco-swissregulon.meme")
 {
-   printf("--- running FIMO")
+   # printf("--- running FIMO")
    FIMO <- file.path(Sys.getenv("HOME"), "meme", "bin", "fimo")  # true on both hagfish & khaleesi
    MOTIFS <- pwmFile
    #cmd <- sprintf("%s --oc %s --thresh -%f --text --verbosity 1 %s %s",
@@ -174,11 +174,17 @@ test_fixMotifNamesTruncatedAt100characters <- function()
    checkTrue(file.exists(fimo.results.file))
 
    tbl <- read.table(fimo.results.file, sep="\t", as.is=TRUE, nrow=-1, header=TRUE)  # two chopped names
-   checkEquals(tbl$motif_id[1],
-               "Mmusculus;Rnorvegicus;Xlaevis;Stropicalis;Ggallus;Hsapiens;Btaurus;Ocuniculus-jaspar2018-NFYA-MA0060")
-   tbl.fixed <- fixMotifNamesTruncatedAt100characters(tbl)
-   checkEquals(tbl.fixed$motif_id[1],
-               "Mmusculus;Rnorvegicus;Xlaevis;Stropicalis;Ggallus;Hsapiens;Btaurus;Ocuniculus-jaspar2018-NFYA-MA0060.1")
+      # before fimo 5.0.5,  motif_id names were truncated at 100 characers.  no longer a problem (27 sep 2019)
+   checkTrue(max(nchar(tbl$motif_id)) > 100)
+     #------------------------------------------------------------
+     # tests and fix no longer needed:
+     #------------------------------------------------------------
+     #  checkEquals(tbl$motif_id[1],
+     #              "Mmusculus;Rnorvegicus;Xlaevis;Stropicalis;Ggallus;Hsapiens;Btaurus;Ocuniculus-jaspar2018-NFYA-MA0060")
+     #  tbl.fixed <- fixMotifNamesTruncatedAt100characters(tbl)
+     #  checkEquals(tbl.fixed$motif_id[1],
+     #              "Mmusculus;Rnorvegicus;Xlaevis;Stropicalis;Ggallus;Hsapiens;Btaurus;Ocuniculus-jaspar2018-NFYA-MA0060.1")
+
 
 } # test_fixMotifNamesTruncatedAt100characters
 #------------------------------------------------------------------------------------------------------------------------
@@ -260,8 +266,8 @@ fimoBatch <- function(tbl.regions, matchThreshold, genomeName, pwmFile)
    if(file.exists(fimo.results.file)){
       if(file.size(fimo.results.file) > 0){
          tbl <- read.table(fimo.results.file, sep="\t", as.is=TRUE, nrow=-1, header=TRUE)  # two chopped names
-         tbl.fixed <- fixMotifNamesTruncatedAt100characters(tbl)
-         tbl.expanded <- expandFimoTable(tbl.fixed)
+         #tbl.fixed <- fixMotifNamesTruncatedAt100characters(tbl)
+         tbl.expanded <- expandFimoTable(tbl)
          } # if non-zero size
       } # if results file exiss
 
