@@ -3,6 +3,7 @@ library(GenomicRanges)
 library(org.Hs.eg.db)
 library(BSgenome.Hsapiens.UCSC.hg38)
 library(BSgenome.Hsapiens.UCSC.hg19)
+library(BSgenome.Mmusculus.UCSC.mm10)
 library(Biostrings)
 library(MotifDb)
 #------------------------------------------------------------------------------------------------------------------------
@@ -18,12 +19,14 @@ runTests <- function()
 #------------------------------------------------------------------------------------------------------------------------
 createFastaFileForFimo <- function(tbl.regions, fastaFileName, genome)
 {
-   stopifnot(genome %in% c("hg38", "hg19"))
+   stopifnot(genome %in% c("hg38", "hg19", "mm10"))
 
    if(genome == "hg38")
      sequences <- with(tbl.regions, getSeq(BSgenome.Hsapiens.UCSC.hg38, chrom, start, end))
    if(genome == "hg19")
      sequences <- with(tbl.regions, getSeq(BSgenome.Hsapiens.UCSC.hg19, chrom, start, end))
+   if(genome == "mm10")
+     sequences <- with(tbl.regions, getSeq(BSgenome.Mmusculus.UCSC.mm10, chrom, start, end))
 
    if(is(sequences, "DNAString"))
        sequences <- DNAStringSet(sequences)
