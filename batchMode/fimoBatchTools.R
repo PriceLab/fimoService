@@ -17,7 +17,7 @@ runTests <- function()
 
 } # runTests
 #------------------------------------------------------------------------------------------------------------------------
-createFastaFileForFimo <- function(tbl.regions, fastaFileName, genome)
+createFastaFileForFimo <- function(tbl.regions, fastaFileName, genome, quiet=TRUE)
 {
    stopifnot(genome %in% c("hg38", "hg19", "mm10"))
 
@@ -31,7 +31,8 @@ createFastaFileForFimo <- function(tbl.regions, fastaFileName, genome)
    if(is(sequences, "DNAString"))
        sequences <- DNAStringSet(sequences)
    names(sequences) <- with(tbl.regions, sprintf("%s:%d-%d", chrom, start, end))
-   message(sprintf("creating fasta file '%s' for %d sequences, for FIMO", fastaFileName, length(sequences)))
+   if(!quiet)
+      message(sprintf("creating fasta file '%s' for %d sequences, for FIMO", fastaFileName, length(sequences)))
 
    writeXStringSet(sequences, fastaFileName)
 
@@ -74,8 +75,8 @@ runFimo <- function(fastaFileName, resultsDirectory, threshold=1e-4,
    cmd <- sprintf("%s --thresh %f --verbosity 1 --text %s %s > %s",
                   FIMO, threshold, MOTIFS, fastaFileName, tsv.path)
 
-   print(cmd)
-   system(cmd)
+   #print(cmd)
+   stdout.messages <- system(cmd, intern=TRUE, ignore.stderr=TRUE)
    return(tsv.path)
    # /users/pshannon/meme/bin/fimo --oc . --thresh 1e-4 ~/github/fimoService/pfms/human-jaspar2018-hocomoco-swissregulon.meme chr11-small.fa
 
@@ -251,7 +252,7 @@ test_expandFimoTable <- function(tbl)
 
 } # test_expandFimoTable
 #------------------------------------------------------------------------------------------------------------------------
-fimoBatch <- function(tbl.regions, matchThreshold, genomeName, pwmFile)
+fimoBatch <- function(tbl.regions, matchThreshold, genomeName, pwmFile, quiet=TRUE)
 {
    resultsDirectory <- tempdir()
 
@@ -259,7 +260,7 @@ fimoBatch <- function(tbl.regions, matchThreshold, genomeName, pwmFile)
      dir.create (resultsDirectory)
 
    fastaFilename <- file.path(resultsDirectory, "forFimo.fa")
-   createFastaFileForFimo(tbl.regions, fastaFilename, genomeName)
+   createFastaFileForFimo(tbl.regions, fastaFilename, genomeName, quiet)
 
    system.time(runFimo(fastaFilename, resultsDirectory, threshold=matchThreshold, pwmFile=pwmFile))
    fimo.results.file <- file.path(resultsDirectory, "forFimo.tsv")

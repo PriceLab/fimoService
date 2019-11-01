@@ -1,6 +1,12 @@
 PORT=5560
-FIMO="/Users/paul/meme/bin/fimo"
-MOTIFS="../pfms/trem2.curated.15.pfms.meme"
+FIMO="$(HOME)/meme/bin/fimo"
+PYTHON_SCRIPT=$(HOME)/github/fimoService/server/runFimoServer.py
+PYTHON=$(HOME)/anaconda3/bin/python
+PYTHON_KHALEESI=$(HOME)/anaconda3/bin/python3
+
+# FIMO="/Users/paul/meme/bin/fimo"
+MOTIFS="../pfms/jaspar2018.hocomoco.human.meme"
 
 start:
-	python -i runServer.py $(PORT) $(FIMO) $(MOTIFS)
+	$(PYTHON) $(PYTHON_SCRIPT) $(PORT) $(FIMO) $(MOTIFS)&
+#	python -i runFimoServer.py $(PORT) $(FIMO) $(MOTIFS)
