@@ -225,8 +225,8 @@ expandFimoTable <- function(tbl)
            number.of.distinct.chromosomes)
       }
    tbl$chrom <- tbl.locs$chrom
-   tbl$start <- tbl$start + tbl.locs$start
-   tbl$end   <- tbl$stop + tbl.locs$start
+   tbl$start <- tbl$start + tbl.locs$start - 1
+   tbl$end   <- tbl$stop + tbl.locs$start - 1
 
    tfs <- unlist(lapply(tbl$motif_id, function(motifName) mcols(MotifDb[motifName])$geneSymbol))
 
