@@ -241,7 +241,7 @@ expandFimoTable <- function(tbl)
 test_expandFimoTable <- function(tbl)
 {
    printf("--- test_expandFimoTable")
-   tbl.directFromFimo <- get(load("tbl.fimoBeforeColumnsFixes.RData"))
+   tbl.directFromFimo <- get(load("~/github/fimoService/batchMode/tbl.fimoBeforeColumnsFixes.RData"))
    tbl <- expandFimoTable(tbl.directFromFimo)
 
    checkEquals(nrow(tbl.directFromFimo), nrow(tbl))
