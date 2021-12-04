@@ -137,13 +137,13 @@ fixMotifNamesTruncatedAt100characters <- function(tbl)
    char.100.lines <- which(nchar(tbl$motif_id) == 100)
    printf("found %d 100 character lines", length(char.100.lines))
    if(length(char.100.lines) == 0)
-      invisible(tbl)
+      return(invisible(tbl))
 
    motifDb.indices <- lapply(tbl$motif_id[char.100.lines], function(id) grep(id, names(MotifDb)))
    motifDb.names <- names(MotifDb)[as.integer(motifDb.indices)]
    tbl$motif_id[char.100.lines] <- motifDb.names
 
-   invisible(tbl)
+   return(invisible(tbl))
 
 } # fixMotifNamesTruncatedAt100characters
 #------------------------------------------------------------------------------------------------------------------------
@@ -234,7 +234,7 @@ expandFimoTable <- function(tbl)
    coi <- c("chrom", "start", "end", "tf", "strand", "score", "p.value", "matched_sequence", "motif_id")
    tbl.final <- tbl[, coi]
    new.order <- order(tbl.final$start, decreasing=FALSE)
-   tbl.final <- tbl.final[new.order,]
+   tbl.final[new.order,]
 
 } # expandFimoTable
 #------------------------------------------------------------------------------------------------------------------------
@@ -252,7 +252,8 @@ test_expandFimoTable <- function(tbl)
 
 } # test_expandFimoTable
 #------------------------------------------------------------------------------------------------------------------------
-fimoBatch <- function(tbl.regions, matchThreshold, genomeName, pwmFile, quiet=TRUE)
+fimoBatch <- function(tbl.regions, matchThreshold, genomeName, pwmFile,
+                      expandResultsWithMotifDb=TRUE, quiet=TRUE)
 {
    resultsDirectory <- tempdir()
 
@@ -266,22 +267,29 @@ fimoBatch <- function(tbl.regions, matchThreshold, genomeName, pwmFile, quiet=TR
    fimo.results.file <- file.path(resultsDirectory, "forFimo.tsv")
 
    tbl.expanded <- data.frame()  # in case nothing is found
+   tbl <- data.frame()
 
    if(file.exists(fimo.results.file)){
       if(file.size(fimo.results.file) > 0){
          tbl <- read.table(fimo.results.file, sep="\t", as.is=TRUE, nrow=-1, header=TRUE)  # two chopped names
-         #tbl.fixed <- fixMotifNamesTruncatedAt100characters(tbl)
-         tbl.expanded <- expandFimoTable(tbl)
+         if(expandResultsWithMotifDb){
+             tbl.expanded <- expandFimoTable(tbl)
+             return(invisible(tbl.expanded))
+             }
          } # if non-zero size
       } # if results file exiss
 
-   invisible(tbl.expanded)
+   if(nrow(tbl) == 0)
+       message(sprintf("--- fimoBatch failure: no sequences matched"))
+
+   invisible(tbl)
 
 } # fimoBatch
 #------------------------------------------------------------------------------------------------------------------------
 test_fimoBatch <- function()
 {
    printf("--- test_fimoBatch")
+
    chomosome <- "chr3"
    start.loc <- 128383794 + 104170
    start.loc.2 <- 28000000
